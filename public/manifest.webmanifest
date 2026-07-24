@@ -1,0 +1,21 @@
+{
+  "name": "Kembo BBQ — Gestion",
+  "short_name": "Kembo BBQ",
+  "description": "Caisse, stock et rentabilité de l'activité de grillades Kembo BBQ.",
+  "lang": "fr",
+  "start_url": "/caisse",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0b0c",
+  "theme_color": "#0b0b0c",
+  "icons": [
+    { "src": "/icones/kembo-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/kembo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/kembo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ouvrir la caisse", "url": "/caisse" },
+    { "name": "Voir le stock", "url": "/stock" }
+  ]
+}

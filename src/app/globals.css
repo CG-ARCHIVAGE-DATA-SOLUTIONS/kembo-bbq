@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/*
+  KEMBO BBQ — direction visuelle
+  ─────────────────────────────
+  L'activité ouvre à 17 h et travaille dans le noir, à la lueur des braises.
+  L'interface est nocturne par nature : fond charbon, contrastes francs, cibles
+  larges. Les deux couleurs de marque viennent de l'affiche : rouge braise et
+  jaune flamme. Elles signalent, elles ne décorent jamais.
+
+  Cette passe ne change pas l'identité — elle change la structure : typographie
+  fluide, surfaces hiérarchisées, zones sûres du téléphone, cibles tactiles.
+*/
+
+@theme {
+  /* Surfaces : du plus profond au plus proche */
+  --color-charbon-900: #0a0a0b;
+  --color-charbon-800: #111113;
+  --color-charbon-700: #17181b;
+  --color-charbon-600: #212327;
+  --color-charbon-500: #2f3138;
+  --color-charbon-400: #454852;
+
+  --color-braise: #d42027;
+  --color-braise-clair: #f2555b;
+  --color-flamme: #f2b705;
+  --color-flamme-clair: #ffd447;
+
+  --color-craie: #f6f3ed;
+  --color-cendre: #8d8d96;
+  --color-cendre-clair: #b9b9c2;
+
+  --color-vert: #3ecb7f;
+  --color-orange: #f08c1a;
+
+  --font-display: var(--font-anton), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* Échelle typographique fluide : lisible sur un téléphone tenu à bout de bras
+     comme sur l'écran du bureau, sans point de rupture visible. */
+  --text-micro: 0.6875rem;
+  --text-menu: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --text-corps: clamp(0.875rem, 0.85rem + 0.12vw, 0.9375rem);
+  --text-nombre: clamp(1.375rem, 1.15rem + 1.1vw, 1.875rem);
+  --text-nombre-hero: clamp(2.5rem, 1.7rem + 3.6vw, 4rem);
+  --text-titre: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  --text-titre-page: clamp(1.875rem, 1.3rem + 2.6vw, 2.75rem);
+
+  --radius-carte: 16px;
+  --radius-champ: 11px;
+
+  /* Barre de navigation basse + encoche : tout le reste s'y adosse. */
+  --hauteur-barre: 4.25rem;
+}
+
+*,
+*::before,
+*::after {
+  min-width: 0;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-charbon-900);
+  color: var(--color-craie);
+  font-family: var(--font-sans);
+  font-size: var(--text-corps);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+/* ───────────────────────────────── Typographie */
+
+/* Les montants s'alignent en colonne : chasse fixe, toujours. */
+.chiffre {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.titre-affiche {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+  line-height: 0.94;
+  text-wrap: balance;
+}
+
+/* Étiquette de section, empruntée aux ardoises de prix des marchés. */
+.eyebrow {
+  font-size: var(--text-micro);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-cendre);
+}
+
+/* ───────────────────────────────── Surfaces */
+
+.carte {
+  background-color: var(--color-charbon-800);
+  border: 1px solid var(--color-charbon-600);
+  border-radius: var(--radius-carte);
+}
+
+.carte-active {
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.carte-active:hover {
+  border-color: var(--color-charbon-400);
+  background-color: var(--color-charbon-700);
+}
+
+/* ───────────────────────────────── Signature : la grille du barbecue */
+
+/*
+  Les barreaux traversent l'écran de vente : les produits reposent littéralement
+  sur le gril. Texture seulement, jamais sous un texte long.
+*/
+.grille-braise {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04) 0px,
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+}
+
+/* ───────────────────────────────── Signature : la barre de braise */
+
+/*
+  Le seuil de rentabilité montré comme un feu qui prend : cendre, puis braise,
+  puis flamme quand le mois couvre ses charges.
+*/
+.barre-braise {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-charbon-400) 0%,
+    var(--color-braise) 52%,
+    var(--color-flamme) 100%
+  );
+}
+
+.lueur-braise {
+  box-shadow:
+    0 0 0 1px rgba(242, 183, 5, 0.35),
+    0 12px 40px -18px rgba(242, 183, 5, 0.55);
+}
+
+/* ───────────────────────────────── Zones sûres du téléphone */
+
+.marge-barre {
+  padding-bottom: calc(var(--hauteur-barre) + env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+.socle-sur {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ───────────────────────────────── Accessibilité */
+
+:focus-visible {
+  outline: 2px solid var(--color-flamme);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Le service se fait debout : rien de cliquable en dessous de 44 px. */
+button,
+[role="button"],
+a[href] {
+  touch-action: manipulation;
+}
+
+input,
+select,
+textarea {
+  font-size: max(16px, var(--text-corps)); /* empêche le zoom iOS à la saisie */
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-charbon-600);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-charbon-500);
+}
+
+/* ───────────────────────────────── Mouvement */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes monte {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes glisse-bas {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@keyframes apparait {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulsation {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.anim-monte { animation: monte 0.22s ease-out both; }
+.anim-glisse { animation: glisse-bas 0.26s cubic-bezier(0.32, 0.72, 0, 1) both; }
+.anim-apparait { animation: apparait 0.18s ease-out both; }
+
+.squelette {
+  animation: pulsation 1.4s ease-in-out infinite;
+  background-color: var(--color-charbon-600);
+  border-radius: 8px;
+}
