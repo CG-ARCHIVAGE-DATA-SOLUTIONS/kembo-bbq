@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -593,7 +593,7 @@ async function telechargerTicket(t: TicketDuJour, nom: string) {
   const { jsPDF } = await import("jspdf");
   const libPaiement = LIB_PAIEMENT[t.modePaiement as ModePaiement] ?? t.modePaiement;
   // Remplace les espaces insécables de Intl.NumberFormat("fr-FR") par des espaces simples
-  const fcfa = (n: number) => formatFCFA(n).replace(/[  ]/g, " ");
+  const fcfa = (n: number) => formatFCFA(n).replace(/[\u00a0\u202f]/g, " ");
 
   // Marges internes : 8 mm à gauche, 72 mm à droite (8 mm libres), centre à 40 mm
   const ML = 8;
