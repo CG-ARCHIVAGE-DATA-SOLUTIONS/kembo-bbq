@@ -567,7 +567,7 @@ h1{font-size:16px;font-weight:bold;color:#1c1c1c}
 .paiement{color:#424242;margin-top:4px}
 @media print{body{width:100%;padding:0;background:#fff}}
 </style></head><body>
-<div class="entete"><img src="/icones/kembo-192.png" alt=""><h1>${nom}</h1></div>
+<div class="entete"><img src="/icones/android-chrome-192x192.png" alt=""><h1>${nom}</h1></div>
 <div class="sep"></div>
 <div class="meta"><strong>${t.numero}</strong> &nbsp;·&nbsp; ${t.heure}${t.vendeur ? ` &nbsp;·&nbsp; ${t.vendeur}` : ""}</div>
 <div class="sep"></div>
@@ -617,7 +617,7 @@ async function telechargerTicket(t: TicketDuJour, nom: string) {
 
   // ── Logo + titre ──────────────────────────────────────
   try {
-    const resp = await fetch("/icones/kembo-192.png");
+    const resp = await fetch("/icones/android-chrome-192x192.png");
     const blob = await resp.blob();
     const logoB64 = await new Promise<string>((res) => {
       const reader = new FileReader();
