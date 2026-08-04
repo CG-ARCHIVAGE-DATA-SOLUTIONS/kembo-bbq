@@ -289,8 +289,8 @@ export function CourbeJours({ points }: { points: PointJour[] }) {
           >
             <defs>
               <linearGradient id="degradeCA" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#f2b705" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#f2b705" stopOpacity="0" />
+                <stop offset="0%" stopColor="#f46a06" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#f46a06" stopOpacity="0" />
               </linearGradient>
             </defs>
 
@@ -300,7 +300,7 @@ export function CourbeJours({ points }: { points: PointJour[] }) {
               x2={L - marge.droite}
               y1={y(0)}
               y2={y(0)}
-              stroke="#212327"
+              stroke="#272727"
               strokeWidth="1"
             />
 
@@ -308,7 +308,7 @@ export function CourbeJours({ points }: { points: PointJour[] }) {
             <path
               d={chemin("chiffreAffaires")}
               fill="none"
-              stroke="#f2b705"
+              stroke="#f46a06"
               strokeWidth="2.5"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -324,7 +324,7 @@ export function CourbeJours({ points }: { points: PointJour[] }) {
 
             {points.map((p, i) => (
               <g key={p.date}>
-                <circle cx={x(i)} cy={y(p.chiffreAffaires)} r="3" fill="#f2b705" />
+                <circle cx={x(i)} cy={y(p.chiffreAffaires)} r="3" fill="#f46a06" />
                 {i % 2 === 0 && (
                   <text
                     x={x(i)}

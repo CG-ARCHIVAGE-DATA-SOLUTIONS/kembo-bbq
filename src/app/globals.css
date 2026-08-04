@@ -13,22 +13,33 @@
 */
 
 @theme {
-  /* Surfaces : du plus profond au plus proche */
-  --color-charbon-900: #0a0a0b;
-  --color-charbon-800: #111113;
-  --color-charbon-700: #17181b;
-  --color-charbon-600: #212327;
-  --color-charbon-500: #2f3138;
-  --color-charbon-400: #454852;
+  /* Surfaces : du plus profond au plus proche
+     Noir charbon brand = #1C1C1C → ancré sur charbon-800 */
+  --color-charbon-900: #111111;
+  --color-charbon-800: #1c1c1c;
+  --color-charbon-700: #272727;
+  --color-charbon-600: #333333;
+  --color-charbon-500: #424242;
+  --color-charbon-400: #5c5c5c;
 
-  --color-braise: #d42027;
-  --color-braise-clair: #f2555b;
-  --color-flamme: #f2b705;
-  --color-flamme-clair: #ffd447;
+  /* Rouge principal brand #E30613 */
+  --color-braise: #e30613;
+  --color-braise-clair: #ff3347;
 
-  --color-craie: #f6f3ed;
+  /* Orange braise brand #F46A06 (remplace l'ancien jaune flamme) */
+  --color-flamme: #f46a06;
+  --color-flamme-clair: #ff8a2e;
+
+  /* Blanc pur brand */
+  --color-craie: #ffffff;
   --color-cendre: #8d8d96;
   --color-cendre-clair: #b9b9c2;
+
+  /* Gris clair brand #F5F5F5 — fonds, documents, PDF */
+  --color-gris-clair: #f5f5f5;
+
+  /* Brun bois brand #6B3E26 — emballages, décoration */
+  --color-brun-bois: #6b3e26;
 
   --color-vert: #3ecb7f;
   --color-orange: #f08c1a;
@@ -149,8 +160,8 @@ body {
 
 .lueur-braise {
   box-shadow:
-    0 0 0 1px rgba(242, 183, 5, 0.35),
-    0 12px 40px -18px rgba(242, 183, 5, 0.55);
+    0 0 0 1px rgba(244, 106, 6, 0.35),
+    0 12px 40px -18px rgba(244, 106, 6, 0.55);
 }
 
 /* ───────────────────────────────── Zones sûres du téléphone */

@@ -125,7 +125,7 @@ export function Bascule({
       htmlFor={id}
       className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-champ)] border border-charbon-500 p-3"
     >
-      <input id={id} type="checkbox" className="mt-0.5 h-5 w-5 accent-[#d42027]" {...props} />
+      <input id={id} type="checkbox" className="mt-0.5 h-5 w-5 accent-[#e30613]" {...props} />
       <span>
         <span className="block text-menu font-semibold text-craie">{label}</span>
         {aide && <span className="mt-0.5 block text-micro leading-snug text-cendre">{aide}</span>}
