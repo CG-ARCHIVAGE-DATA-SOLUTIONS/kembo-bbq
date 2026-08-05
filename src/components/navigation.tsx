@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
@@ -96,9 +97,16 @@ export function Navigation({
       <aside className="hidden w-60 shrink-0 border-r border-charbon-700 bg-charbon-800 lg:block">
         <div className="sticky top-0 flex h-dvh flex-col overflow-y-auto p-5">
           <Link href={peutVoir(utilisateur.role, "/") ? "/" : "/caisse"} className="mb-7 block">
-            <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-braise">
-                <Flame className="h-5 w-5 text-craie" strokeWidth={2.5} />
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-braise/30">
+                <Image
+                  src="/icones/android-chrome-192x192.png"
+                  alt="Kembo BBQ"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                  priority
+                />
               </span>
               <span className="titre-affiche text-xl leading-none text-craie">{nom}</span>
             </div>
@@ -159,8 +167,15 @@ export function Navigation({
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-charbon-700 bg-charbon-800/95 px-4 py-3 backdrop-blur lg:hidden">
         <Link href={peutVoir(utilisateur.role, "/") ? "/" : "/caisse"} className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-braise">
-            <Flame className="h-4 w-4 text-craie" strokeWidth={2.5} />
+          <span className="flex h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-braise/30">
+            <Image
+              src="/icones/android-chrome-192x192.png"
+              alt="Kembo BBQ"
+              width={32}
+              height={32}
+              className="h-full w-full object-cover"
+              priority
+            />
           </span>
           <span className="titre-affiche text-lg leading-none text-craie">{nom}</span>
         </Link>

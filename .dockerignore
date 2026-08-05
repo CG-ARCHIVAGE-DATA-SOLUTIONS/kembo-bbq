@@ -1,0 +1,12 @@
+.git
+.github
+.claude
+.next
+node_modules
+prisma/kembo.db
+prisma/kembo.db-journal
+prisma/*.db
+prisma/*.db-journal
+.env
+.env.local
+*.log

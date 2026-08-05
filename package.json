@@ -36,7 +36,6 @@
     "@typescript-eslint/eslint-plugin": "^8.65.0",
     "@typescript-eslint/parser": "^8.65.0",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^16.2.11",
     "eslint-plugin-react-hooks": "^7.1.1",
     "prisma": "^6.2.1",
     "tailwindcss": "^4.0.0",
