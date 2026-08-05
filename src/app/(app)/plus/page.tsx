@@ -9,6 +9,7 @@ import {
   HandCoins,
   Users,
   LogOut,
+  ClipboardList,
 } from "lucide-react";
 import { sessionCourante } from "@/domain/auth";
 import { seDeconnecter } from "@/app/actions/auth";
@@ -36,6 +37,7 @@ const SECTIONS = [
     liens: [
       { href: "/produits", libelle: "Produits", detail: "La carte et les prix", icone: Tags },
       { href: "/equipe", libelle: "Équipe", detail: "Qui a accès, et à quoi", icone: Users },
+      { href: "/audit", libelle: "Audit", detail: "Toutes les actions, par jour", icone: ClipboardList },
     ],
   },
 ];

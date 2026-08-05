@@ -19,6 +19,7 @@ import {
   Users,
   LogOut,
   MoreHorizontal,
+  ClipboardList,
 } from "lucide-react";
 import { seDeconnecter } from "@/app/actions/auth";
 import { LIB_ROLE, peutVoir, type Role } from "@/domain/roles";
@@ -55,6 +56,7 @@ const GROUPES = [
       { href: "/produits", libelle: "Produits", icone: Tags },
       { href: "/revient", libelle: "Prix de revient", icone: Calculator },
       { href: "/equipe", libelle: "Équipe", icone: Users },
+      { href: "/audit", libelle: "Audit", icone: ClipboardList },
     ],
   },
 ];

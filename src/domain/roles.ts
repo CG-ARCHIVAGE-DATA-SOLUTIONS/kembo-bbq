@@ -20,6 +20,7 @@ export const ACCES_PAR_ROLE: Record<Role, string[]> = {
     "/revient",
     "/credits",
     "/equipe",
+    "/audit",
     "/plus",
   ],
   VENDEUR: ["/caisse", "/stock", "/plus"],
