@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 // Singleton : en dev, le hot-reload recrée le module à chaque sauvegarde et
-// ouvrirait autant de connexions SQLite.
+// ouvrirait autant de connexions ouvertes vers Neon.
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const db =
