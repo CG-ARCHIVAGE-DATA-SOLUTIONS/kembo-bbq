@@ -8,7 +8,11 @@ import {
   Calculator,
   HandCoins,
   Users,
+  LogOut,
 } from "lucide-react";
+import { sessionCourante } from "@/domain/auth";
+import { seDeconnecter } from "@/app/actions/auth";
+import { LIB_ROLE } from "@/domain/roles";
 
 const SECTIONS = [
   {
@@ -36,7 +40,9 @@ const SECTIONS = [
   },
 ];
 
-export default function PagePlus() {
+export default async function PagePlus() {
+  const session = await sessionCourante();
+
   return (
     <div className="flex flex-col gap-6">
       <header>
@@ -66,6 +72,35 @@ export default function PagePlus() {
           </div>
         </section>
       ))}
+
+      {/* ── Session ── */}
+      {session && (
+        <section>
+          <p className="eyebrow mb-2">Session</p>
+          <div className="carte p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-charbon-700 text-sm font-bold text-craie">
+                {session.nom.charAt(0).toUpperCase()}
+              </span>
+              <div>
+                <p className="text-sm font-bold text-craie">{session.nom}</p>
+                <p className="text-[11px] uppercase tracking-wide text-cendre">
+                  {LIB_ROLE[session.role]}
+                </p>
+              </div>
+            </div>
+            <form action={seDeconnecter}>
+              <button
+                type="submit"
+                className="flex w-full items-center gap-3 rounded-lg border border-charbon-600 px-4 py-3 text-sm font-semibold text-cendre transition-colors hover:border-braise hover:text-braise"
+              >
+                <LogOut className="h-4 w-4" strokeWidth={2.2} />
+                Fermer la session
+              </button>
+            </form>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
