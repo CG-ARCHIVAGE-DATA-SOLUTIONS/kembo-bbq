@@ -51,12 +51,12 @@ export function Connexion({ comptes, suite }: { comptes: Compte[]; suite: string
 
       {/* ── Panneau gauche : branding ─────────────────────────────────────── */}
       <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center gap-8 bg-charbon-800 border-r border-charbon-700 p-12">
-        <div className="relative flex h-64 w-64 shrink-0 overflow-hidden rounded-full ring-4 ring-braise/25 shadow-2xl">
+        <div className="relative flex h-80 w-80 shrink-0 overflow-hidden rounded-full ring-4 ring-braise/25 shadow-2xl">
           <Image
             src="/icones/android-chrome-512x512.png"
             alt="Kembo BBQ"
-            width={256}
-            height={256}
+            width={320}
+            height={320}
             className="h-full w-full object-cover"
             priority
           />
