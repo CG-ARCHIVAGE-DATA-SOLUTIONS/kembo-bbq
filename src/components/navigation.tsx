@@ -167,25 +167,31 @@ export function Navigation({
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-charbon-700 bg-charbon-800/95 px-4 py-3 backdrop-blur lg:hidden">
         <Link href={peutVoir(utilisateur.role, "/") ? "/" : "/caisse"} className="flex items-center gap-2">
-          <span className="flex h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-braise/30">
+          <span className="flex h-7 w-7 shrink-0 overflow-hidden rounded-full ring-2 ring-braise/30">
             <Image
               src="/icones/android-chrome-192x192.png"
               alt="Kembo BBQ"
-              width={32}
-              height={32}
+              width={28}
+              height={28}
               className="h-full w-full object-cover"
               priority
             />
           </span>
-          <span className="titre-affiche text-lg leading-none text-craie">{nom}</span>
+          <span className="titre-affiche text-base leading-none text-craie">{nom}</span>
         </Link>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-cendre">{utilisateur.nom}</span>
           <Link
             href="/caisse"
-            className="rounded-lg bg-flamme px-3 py-1.5 text-xs font-bold uppercase text-charbon-900"
+            className="rounded-lg bg-flamme px-3 py-1.5 text-[11px] font-bold uppercase text-charbon-900"
           >
             Vendre
+          </Link>
+          <Link
+            href="/plus"
+            aria-label="Mon profil"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-charbon-600 text-sm font-bold text-craie hover:bg-charbon-500 transition-colors"
+          >
+            {utilisateur.nom.charAt(0).toUpperCase()}
           </Link>
         </div>
       </header>
