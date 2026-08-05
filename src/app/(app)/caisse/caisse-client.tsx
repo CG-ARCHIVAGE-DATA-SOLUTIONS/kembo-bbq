@@ -555,18 +555,19 @@ function genererHtmlRecu(t: TicketDuJour, nom: string): string {
   return `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${t.numero}</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:monospace;font-size:13px;width:300px;margin:auto;padding:12px;color:#111}
-.entete{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px}
+body{font-family:monospace;font-size:13px;width:300px;margin:auto;padding:12px;background:#f5f5f5;color:#1c1c1c}
+.entete{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px}
 .entete img{width:32px;height:32px;object-fit:contain}
-h1{font-size:16px;font-weight:bold}
+h1{font-size:16px;font-weight:bold;color:#1c1c1c}
 .centre{text-align:center}
-.sep{border-top:1px dashed #666;margin:8px 0}
-.meta{margin-bottom:2px}
+.sep{border-top:1px dashed #6b3e26;margin:8px 0}
+.meta{margin-bottom:2px;color:#424242}
 .row{display:flex;justify-content:space-between;gap:8px;margin:3px 0}
-.total{font-size:15px;font-weight:bold}
-@media print{body{width:100%;padding:0}}
+.total{font-size:15px;font-weight:bold;color:#e30613}
+.paiement{color:#424242;margin-top:4px}
+@media print{body{width:100%;padding:0;background:#fff}}
 </style></head><body>
-<div class="entete"><img src="/icones/kembo-192.png" alt=""><h1>${nom}</h1></div>
+<div class="entete"><img src="/icones/android-chrome-192x192.png" alt=""><h1>${nom}</h1></div>
 <div class="sep"></div>
 <div class="meta"><strong>${t.numero}</strong> &nbsp;·&nbsp; ${t.heure}${t.vendeur ? ` &nbsp;·&nbsp; ${t.vendeur}` : ""}</div>
 <div class="sep"></div>
@@ -574,9 +575,9 @@ ${lignesHtml}
 ${remiseHtml}
 <div class="sep"></div>
 <div class="row total"><span>TOTAL</span><span>${formatFCFA(t.total)} FCFA</span></div>
-<div class="meta" style="margin-top:4px">Paiement : ${libPaiement}</div>
+<div class="paiement">Paiement : ${libPaiement}</div>
 <div class="sep"></div>
-<div class="centre">Merci de votre visite !</div>
+<div class="centre" style="color:#6b3e26;font-style:italic">Merci de votre visite !</div>
 </body></html>`;
 }
 
@@ -616,7 +617,7 @@ async function telechargerTicket(t: TicketDuJour, nom: string) {
 
   // ── Logo + titre ──────────────────────────────────────
   try {
-    const resp = await fetch("/icones/kembo-192.png");
+    const resp = await fetch("/icones/android-chrome-192x192.png");
     const blob = await resp.blob();
     const logoB64 = await new Promise<string>((res) => {
       const reader = new FileReader();
