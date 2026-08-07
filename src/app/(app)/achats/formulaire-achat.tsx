@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
-import { validerAchat, annulerAchat } from "@/app/actions/achats";
+import { Plus, Settings2 } from "lucide-react";
+import { validerAchat, modifierAchat, annulerAchat } from "@/app/actions/achats";
 import { CONDITIONNEMENTS, calculerLot } from "@/domain/rules";
 import { formatFCFA, formatQuantite } from "@/lib/money";
 import { Bouton, Champ, Selecteur, Bascule } from "@/components/ui/primitives";
@@ -172,29 +172,108 @@ export function FormulaireAchat({ produits }: { produits: Option[] }) {
   );
 }
 
-export function BoutonAnnulerAchat({ id, reference }: { id: string; reference: string }) {
+type LotProps = {
+  id: string;
+  reference: string;
+  date: Date;
+  fournisseur: string | null;
+  paye: boolean;
+};
+
+export function GestionAchat({ lot }: { lot: LotProps }) {
   const router = useRouter();
   const annoncer = useAnnonce();
   const [enCours, demarrer] = useTransition();
 
+  const [date, setDate] = useState(() => new Date(lot.date).toISOString().slice(0, 10));
+  const [fournisseur, setFournisseur] = useState(lot.fournisseur ?? "");
+  const [paye, setPaye] = useState(lot.paye);
+
   return (
-    <button
-      type="button"
-      disabled={enCours}
-      onClick={() =>
-        demarrer(async () => {
-          if (
-            !window.confirm(`Supprimer ${reference} ? Le stock et le coût moyen seront recalculés.`)
-          )
-            return;
-          const reponse = await annulerAchat(id);
-          annoncer(reponse.ok ? "ok" : "erreur", reponse.message);
-          router.refresh();
-        })
-      }
-      className="text-micro font-bold uppercase tracking-wide text-cendre transition-colors hover:text-braise-clair disabled:opacity-50"
+    <Feuille
+      titre={lot.reference}
+      declencheur={(ouvrir) => (
+        <button
+          type="button"
+          onClick={ouvrir}
+          aria-label={`Modifier ${lot.reference}`}
+          className="rounded-lg p-2 text-cendre transition-colors hover:bg-charbon-700 hover:text-craie"
+        >
+          <Settings2 className="h-4 w-4" />
+        </button>
+      )}
     >
-      Supprimer
-    </button>
+      {(fermer) => (
+        <div className="flex flex-col gap-5">
+          <section>
+            <p className="mb-3 text-micro font-bold uppercase tracking-wider text-cendre">Détail</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Champ label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <Champ
+                label="Fournisseur"
+                value={fournisseur}
+                onChange={(e) => setFournisseur(e.target.value)}
+                placeholder="Marché Total, dépôt AURA…"
+              />
+              <div className="flex items-end">
+                <Bascule
+                  label="Payé immédiatement"
+                  checked={paye}
+                  onChange={(e) => setPaye(e.target.checked)}
+                />
+              </div>
+            </div>
+
+            <div className="mt-3 rounded-[var(--radius-carte)] border border-charbon-600 bg-charbon-900 px-4 py-3">
+              <p className="text-xs text-cendre">
+                Pour corriger les quantités ou le montant, supprimez ce lot et saisissez-le à nouveau.
+              </p>
+            </div>
+
+            <Bouton
+              taille="sm"
+              variante="secondaire"
+              className="mt-3"
+              disabled={enCours}
+              onClick={() =>
+                demarrer(async () => {
+                  const r = await modifierAchat(lot.id, {
+                    date: new Date(date),
+                    fournisseur: fournisseur || undefined,
+                    paye,
+                  });
+                  annoncer(r.ok ? "ok" : "erreur", r.message);
+                  if (r.ok) { fermer(); router.refresh(); }
+                })
+              }
+            >
+              {enCours ? "Enregistrement…" : "Enregistrer"}
+            </Bouton>
+          </section>
+
+          <hr className="border-charbon-700" />
+
+          <section>
+            <p className="mb-3 text-micro font-bold uppercase tracking-wider text-cendre">Danger</p>
+            <p className="mb-3 text-xs text-cendre">
+              La suppression recalcule le stock et le coût moyen du produit.
+            </p>
+            <Bouton
+              variante="danger"
+              disabled={enCours}
+              onClick={() =>
+                demarrer(async () => {
+                  const r = await annulerAchat(lot.id);
+                  annoncer(r.ok ? "ok" : "erreur", r.message);
+                  if (r.ok) { fermer(); router.refresh(); }
+                })
+              }
+            >
+              Supprimer ce lot
+            </Bouton>
+          </section>
+        </div>
+      )}
+    </Feuille>
   );
 }

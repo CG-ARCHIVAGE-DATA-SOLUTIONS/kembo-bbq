@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { CONDITIONNEMENTS } from "@/domain/rules";
+import { db } from "@/lib/db";
 import { enregistrerAchat, supprimerAchat } from "@/domain/achats";
 import { formatFCFA } from "@/lib/money";
 import { exigerGerant } from "@/domain/auth";
@@ -38,6 +39,27 @@ export async function validerAchat(donnees: unknown): Promise<Reponse<{ coutUnit
     };
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Achat invalide." };
+    return echec(e);
+  }
+}
+
+const schemaModifLot = z.object({
+  date: z.coerce.date().optional(),
+  fournisseur: z.string().trim().max(60).optional(),
+  paye: z.coerce.boolean().optional(),
+  note: z.string().trim().max(200).optional(),
+});
+
+export async function modifierAchat(id: string, donnees: unknown): Promise<Reponse> {
+  try {
+    await exigerGerant();
+    const valeurs = schemaModifLot.parse(donnees);
+    await db.lot.update({ where: { id }, data: valeurs });
+    revalidatePath("/achats");
+    revalidatePath("/");
+    return { ok: true, message: "Lot mis à jour." };
+  } catch (e) {
+    if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Saisie invalide." };
     return echec(e);
   }
 }

@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/dates";
 import { formatFCFA, formatQuantite } from "@/lib/money";
 import { Badge, EnTetePage, EtatVide } from "@/components/ui/primitives";
 import { ListeAdaptative, Empile, type Colonne } from "@/components/ui/liste";
-import { FormulaireAchat, BoutonAnnulerAchat } from "./formulaire-achat";
+import { FormulaireAchat, GestionAchat } from "./formulaire-achat";
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +74,9 @@ export default async function PageAchats() {
       entete: "",
       role: "action",
       align: "droite",
-      rendu: (l) => <BoutonAnnulerAchat id={l.id} reference={l.reference} />,
+      rendu: (l) => (
+        <GestionAchat lot={{ id: l.id, reference: l.reference, date: l.date, fournisseur: l.fournisseur, paye: l.paye }} />
+      ),
     },
   ];
 
