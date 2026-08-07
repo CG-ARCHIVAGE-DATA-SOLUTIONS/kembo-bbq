@@ -30,6 +30,20 @@ export async function validerDepense(donnees: unknown): Promise<Reponse> {
   }
 }
 
+export async function modifierDepense(id: string, donnees: unknown): Promise<Reponse> {
+  try {
+    await exigerGerant();
+    const valeurs = schemaDepense.partial().parse(donnees);
+    await db.depense.update({ where: { id }, data: valeurs });
+    revalidatePath("/depenses");
+    revalidatePath("/");
+    return { ok: true, message: "Dépense mise à jour." };
+  } catch (e) {
+    if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Saisie invalide." };
+    return echec(e);
+  }
+}
+
 export async function supprimerDepense(id: string): Promise<Reponse> {
   try {
     await exigerGerant();
