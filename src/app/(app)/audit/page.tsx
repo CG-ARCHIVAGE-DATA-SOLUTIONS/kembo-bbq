@@ -34,6 +34,8 @@ type Evt = {
   detail: string;
   montant: number;
   entree: boolean;
+  annulee?: boolean;
+  annulationInfo?: string;
 };
 
 type Config = {
@@ -92,6 +94,12 @@ export default async function PageAudit() {
     ...ventes.map((v) => {
       const nbArticles = v.lignes.reduce((s, l) => s + l.quantite, 0);
       const paiement = LIB_PAIEMENT[v.modePaiement as ModePaiement] ?? v.modePaiement;
+      let annulationInfo: string | undefined;
+      if (v.annulee && v.annulationPar) {
+        annulationInfo = `Annulé par ${v.annulationPar}${v.annulationMotif ? ` — ${v.annulationMotif}` : ""}`;
+      } else if (v.annulee) {
+        annulationInfo = "Annulé";
+      }
       return {
         id: v.id,
         date: v.date,
@@ -99,7 +107,9 @@ export default async function PageAudit() {
         texte: `${v.numero} · ${nbArticles} article${nbArticles > 1 ? "s" : ""} · ${paiement}`,
         detail: v.utilisateur ? `Encaissé par ${v.utilisateur.nom}` : "",
         montant: v.total,
-        entree: true,
+        entree: !v.annulee,
+        annulee: v.annulee,
+        annulationInfo,
       };
     }),
     ...lots.map((l) => ({
@@ -161,15 +171,17 @@ export default async function PageAudit() {
     .sort(([a], [b]) => b.localeCompare(a))
     .map(([cle, evts]) => {
       const sorted = [...evts].sort((a, b) => b.date.getTime() - a.date.getTime());
-      const totalEntrees = evts.filter((e) => e.entree).reduce((s, e) => s + e.montant, 0);
-      const totalSorties = evts.filter((e) => !e.entree).reduce((s, e) => s + e.montant, 0);
-      const nbVentes = evts.filter((e) => e.type === "vente").length;
+      const totalEntrees = evts.filter((e) => e.entree && !e.annulee).reduce((s, e) => s + e.montant, 0);
+      const totalSorties = evts.filter((e) => !e.entree && e.type !== "vente").reduce((s, e) => s + e.montant, 0);
+      const nbVentes = evts.filter((e) => e.type === "vente" && !e.annulee).length;
+      const nbAnnulees = evts.filter((e) => e.annulee).length;
       return {
         cle,
         label: format(new Date(cle + "T12:00:00"), "EEEE d MMMM yyyy", { locale: fr }),
         totalEntrees,
         totalSorties,
         nbVentes,
+        nbAnnulees,
         evts: sorted,
       };
     });
@@ -191,7 +203,7 @@ export default async function PageAudit() {
           <p className="text-cendre">Aucune activité enregistrée sur les 90 derniers jours.</p>
         </div>
       ) : (
-        jours.map(({ cle, label, totalEntrees, totalSorties, nbVentes, evts }) => (
+        jours.map(({ cle, label, totalEntrees, totalSorties, nbVentes, nbAnnulees, evts }) => (
           <section key={cle}>
             {/* ── En-tête du jour */}
             <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
@@ -200,6 +212,11 @@ export default async function PageAudit() {
                 {nbVentes > 0 && (
                   <span className="text-cendre">
                     {nbVentes} vente{nbVentes > 1 ? "s" : ""}
+                  </span>
+                )}
+                {nbAnnulees > 0 && (
+                  <span className="text-braise">
+                    {nbAnnulees} annulé{nbAnnulees > 1 ? "s" : ""}
                   </span>
                 )}
                 {totalEntrees > 0 && (
@@ -218,33 +235,43 @@ export default async function PageAudit() {
             {/* ── Liste des événements */}
             <div className="carte overflow-hidden">
               {evts.map((evt, i) => {
-                const { fond, couleur, Icone, label: typeLabel } = CONFIG[evt.type];
+                const { fond, couleur, Icone } = CONFIG[evt.type];
+                const estAnnulee = evt.annulee;
                 return (
                   <div
                     key={evt.id}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3",
                       i < evts.length - 1 && "border-b border-charbon-700",
+                      estAnnulee && "opacity-60",
                     )}
                   >
                     {/* Icone type */}
-                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", fond)}>
-                      <Icone className={cn("h-4 w-4", couleur)} strokeWidth={2.2} />
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", estAnnulee ? "bg-charbon-700" : fond)}>
+                      <Icone className={cn("h-4 w-4", estAnnulee ? "text-cendre" : couleur)} strokeWidth={2.2} />
                     </span>
 
                     {/* Texte */}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-craie">{evt.texte}</p>
-                      {evt.detail && (
+                      <p className={cn("truncate text-sm font-semibold", estAnnulee ? "text-cendre line-through" : "text-craie")}>
+                        {evt.texte}
+                      </p>
+                      {estAnnulee && evt.annulationInfo ? (
+                        <p className="truncate text-xs text-braise">{evt.annulationInfo}</p>
+                      ) : evt.detail ? (
                         <p className="truncate text-xs text-cendre">{evt.detail}</p>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Heure + montant */}
                     <div className="shrink-0 text-right">
-                      <p className={cn("chiffre text-sm font-bold", evt.entree ? "text-vert" : "text-craie")}>
-                        {evt.entree ? "+" : "−"}{formatFCFA(evt.montant)}
-                      </p>
+                      {estAnnulee ? (
+                        <p className="chiffre text-xs font-bold text-braise">ANNULÉ</p>
+                      ) : (
+                        <p className={cn("chiffre text-sm font-bold", evt.entree ? "text-vert" : "text-craie")}>
+                          {evt.entree ? "+" : "−"}{formatFCFA(evt.montant)}
+                        </p>
+                      )}
                       <p className="text-[10px] text-cendre">{formatHeure(evt.date)}</p>
                     </div>
                   </div>

@@ -5,7 +5,7 @@ import { sessionCourante, LIB_ROLE, type Role } from "@/domain/auth";
 import { formatDate } from "@/lib/dates";
 import { Badge, EnTetePage, EtatVide } from "@/components/ui/primitives";
 import { ListeAdaptative, Empile, type Colonne } from "@/components/ui/liste";
-import { FormulaireUtilisateur, ActionsUtilisateur } from "./equipe-client";
+import { FormulaireUtilisateur, GestionUtilisateur } from "./equipe-client";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +72,15 @@ export default async function PageEquipe() {
       entete: "",
       role: "action",
       align: "droite",
-      rendu: (u) => <ActionsUtilisateur id={u.id} actif={u.actif} />,
+      rendu: (u) => (
+        <GestionUtilisateur
+          id={u.id}
+          nom={u.nom}
+          role={u.role as Role}
+          actif={u.actif}
+          estMoi={u.id === moi.id}
+        />
+      ),
     },
   ];
 
