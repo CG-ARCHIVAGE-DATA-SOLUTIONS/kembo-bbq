@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import {
@@ -81,6 +82,22 @@ export async function changerCode(id: string, pin: string): Promise<Reponse> {
     return { ok: true, message: "Code modifié." };
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Code invalide." };
+    return echec(e);
+  }
+}
+
+export async function modifierUtilisateur(id: string, donnees: unknown): Promise<Reponse> {
+  try {
+    await exigerGerant();
+    const { nom, role } = z.object({
+      nom: z.string().trim().min(2, "Indiquez le nom de la personne."),
+      role: z.enum(ROLES),
+    }).parse(donnees);
+    await db.utilisateur.update({ where: { id }, data: { nom, role } });
+    revalidatePath("/equipe");
+    return { ok: true, message: "Profil mis à jour." };
+  } catch (e) {
+    if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Saisie invalide." };
     return echec(e);
   }
 }

@@ -10,7 +10,7 @@ import {
 } from "@/domain/rules";
 import { Carte, EnTetePage, EnTeteSection, EtatVide } from "@/components/ui/primitives";
 import { ListeAdaptative, Empile, type Colonne } from "@/components/ui/liste";
-import { FormulaireDepense, BoutonSupprimerDepense } from "./formulaire-depense";
+import { FormulaireDepense, GestionDepense } from "./formulaire-depense";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +61,7 @@ export default async function PageDepenses() {
       entete: "",
       role: "action",
       align: "droite",
-      rendu: (d) => <BoutonSupprimerDepense id={d.id} />,
+      rendu: (d) => <GestionDepense depense={d} />,
     },
   ];
 

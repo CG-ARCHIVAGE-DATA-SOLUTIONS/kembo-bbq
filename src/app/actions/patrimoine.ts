@@ -55,6 +55,36 @@ export async function validerApport(donnees: unknown): Promise<Reponse> {
   }
 }
 
+export async function modifierInvestissement(id: string, donnees: unknown): Promise<Reponse> {
+  try {
+    await exigerGerant();
+    const valeurs = schemaInvestissement.partial().parse(donnees);
+    await db.investissement.update({ where: { id }, data: valeurs });
+    revalidatePath("/investissements");
+    revalidatePath("/rapports");
+    revalidatePath("/");
+    return { ok: true, message: "Investissement mis à jour." };
+  } catch (e) {
+    if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Saisie invalide." };
+    return echec(e);
+  }
+}
+
+export async function modifierApport(id: string, donnees: unknown): Promise<Reponse> {
+  try {
+    await exigerGerant();
+    const valeurs = schemaApport.partial().parse(donnees);
+    await db.apport.update({ where: { id }, data: valeurs });
+    revalidatePath("/investissements");
+    revalidatePath("/rapports");
+    revalidatePath("/");
+    return { ok: true, message: "Apport mis à jour." };
+  } catch (e) {
+    if (e instanceof z.ZodError) return { ok: false, message: e.errors[0]?.message ?? "Saisie invalide." };
+    return echec(e);
+  }
+}
+
 export async function supprimerInvestissement(id: string): Promise<Reponse> {
   try {
     await exigerGerant();

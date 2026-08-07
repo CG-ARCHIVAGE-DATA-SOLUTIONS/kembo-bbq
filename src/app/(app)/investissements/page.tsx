@@ -10,7 +10,12 @@ import {
 import { EnTetePage, EnTeteSection, EtatVide } from "@/components/ui/primitives";
 import { ListeAdaptative, Empile, type Colonne } from "@/components/ui/liste";
 import { Indicateur } from "@/components/tableau-de-bord";
-import { FormulaireInvestissement, FormulaireApport, BoutonSupprimer } from "./formulaires";
+import {
+  FormulaireInvestissement,
+  FormulaireApport,
+  GestionInvestissement,
+  GestionApport,
+} from "./formulaires";
 
 export const dynamic = "force-dynamic";
 
@@ -80,7 +85,7 @@ export default async function PageInvestissements() {
       entete: "",
       role: "action",
       align: "droite",
-      rendu: (i) => <BoutonSupprimer id={i.id} type="investissement" />,
+      rendu: (i) => <GestionInvestissement investissement={i} />,
     },
   ];
 
@@ -99,7 +104,7 @@ export default async function PageInvestissements() {
       entete: "",
       role: "action",
       align: "droite",
-      rendu: (a) => <BoutonSupprimer id={a.id} type="apport" />,
+      rendu: (a) => <GestionApport apport={a} />,
     },
   ];
 

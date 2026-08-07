@@ -2,8 +2,8 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, Trash2, Check, Search, ChevronUp, Printer, Download } from "lucide-react";
-import { validerVente } from "@/app/actions/ventes";
+import { Minus, Plus, Trash2, Check, Search, ChevronUp, Printer, Download, Ban } from "lucide-react";
+import { validerVente, supprimerVente } from "@/app/actions/ventes";
 import { mettreEnAttente, nouvelleCle, estPanneReseau } from "@/lib/file-attente";
 import { formatFCFA, formatQuantite } from "@/lib/money";
 import {
@@ -49,6 +49,7 @@ export function Caisse({ produits }: { produits: ProduitCaisse[] }) {
   const [modePaiement, setModePaiement] = useState<ModePaiement>("ESPECES");
   const [remise, setRemise] = useState(0);
   const [client, setClient] = useState("");
+  const [dateVente, setDateVente] = useState(() => new Date().toISOString().slice(0, 10));
   const [filtre, setFiltre] = useState<CategorieProduit | "TOUT">("TOUT");
   const [recherche, setRecherche] = useState("");
 
@@ -130,7 +131,7 @@ export function Caisse({ produits }: { produits: ProduitCaisse[] }) {
       modePaiement,
       remise,
       client: modePaiement === "CREDIT" ? client.trim() || undefined : undefined,
-      date: new Date().toISOString(),
+      date: new Date(dateVente + "T12:00:00").toISOString(),
       resume: lignes.map((l) => `${l.quantite}× ${l.nom}`).join(", "),
       total,
     };
@@ -186,6 +187,8 @@ export function Caisse({ produits }: { produits: ProduitCaisse[] }) {
       setModePaiement={setModePaiement}
       client={client}
       setClient={setClient}
+      dateVente={dateVente}
+      setDateVente={setDateVente}
       changerQuantite={changerQuantite}
       changerPrix={changerPrix}
       viderTicket={viderTicket}
@@ -332,6 +335,8 @@ function PanneauTicket({
   setModePaiement,
   client,
   setClient,
+  dateVente,
+  setDateVente,
   changerQuantite,
   changerPrix,
   viderTicket,
@@ -347,6 +352,8 @@ function PanneauTicket({
   setModePaiement: (m: ModePaiement) => void;
   client: string;
   setClient: (s: string) => void;
+  dateVente: string;
+  setDateVente: (d: string) => void;
   changerQuantite: (id: string, delta: number) => void;
   changerPrix: (id: string, prix: number) => void;
   viderTicket: () => void;
@@ -439,6 +446,17 @@ function PanneauTicket({
       </div>
 
       <div className="border-t border-charbon-600 px-4 py-3">
+        {/* Date de la vente — par défaut aujourd'hui, modifiable pour saisie rétrospective */}
+        <label className="mb-3 flex items-center justify-between gap-3">
+          <span className="text-micro uppercase tracking-wide text-cendre">Date</span>
+          <input
+            type="date"
+            value={dateVente}
+            onChange={(e) => setDateVente(e.target.value)}
+            className="chiffre h-9 rounded-[var(--radius-champ)] border border-charbon-500 bg-charbon-900 px-2 text-xs text-craie focus:border-flamme focus:outline-none"
+          />
+        </label>
+
         <div className="mb-3 flex gap-1.5">
           {MODES_PAIEMENT.map((m) => (
             <button
@@ -695,6 +713,66 @@ async function telechargerTicket(t: TicketDuJour, nom: string) {
   doc.save(`${t.numero}.pdf`);
 }
 
+function BoutonAnnuler({ id, numero }: { id: string; numero: string }) {
+  const router = useRouter();
+  const annoncer = useAnnonce();
+  const [enCours, demarrer] = useTransition();
+  const [motif, setMotif] = useState("");
+
+  return (
+    <Feuille
+      titre={`Annuler ${numero}`}
+      description="Le ticket sera exclu des calculs mais restera visible dans l'audit, avec le motif et la date d'annulation."
+      declencheur={(ouvrir) => (
+        <button
+          type="button"
+          title="Annuler ce ticket"
+          onClick={ouvrir}
+          className="rounded p-1.5 text-cendre transition-colors hover:bg-charbon-700 hover:text-braise-clair"
+        >
+          <Ban className="h-3.5 w-3.5" />
+        </button>
+      )}
+    >
+      {(fermer) => (
+        <div className="flex flex-col gap-4">
+          <div className="rounded-[var(--radius-carte)] border border-charbon-600 bg-charbon-900 p-4">
+            <p className="text-sm text-cendre">
+              Le stock des produits de ce ticket sera automatiquement rendu. Le ticket sera marqué
+              « annulé » et consultable depuis l'audit.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-micro font-bold uppercase tracking-wider text-cendre">
+              Motif (optionnel)
+            </label>
+            <input
+              value={motif}
+              onChange={(e) => setMotif(e.target.value)}
+              placeholder="Erreur de saisie, test, doublon…"
+              className="h-12 rounded-[var(--radius-champ)] border border-charbon-500 bg-charbon-900 px-3 text-craie placeholder:text-charbon-400 focus:border-flamme focus:outline-none"
+            />
+          </div>
+          <button
+            type="button"
+            disabled={enCours}
+            onClick={() =>
+              demarrer(async () => {
+                const r = await supprimerVente(id, motif);
+                annoncer(r.ok ? "ok" : "erreur", r.message);
+                if (r.ok) { fermer(); router.refresh(); }
+              })
+            }
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-champ)] border border-braise/40 bg-transparent px-6 text-corps font-semibold text-braise-clair transition-colors hover:bg-braise/10 disabled:opacity-55"
+          >
+            {enCours ? "Annulation en cours…" : `Confirmer l'annulation de ${numero}`}
+          </button>
+        </div>
+      )}
+    </Feuille>
+  );
+}
+
 export function TicketsDuJour({
   tickets,
   nomEtablissement,
@@ -779,6 +857,7 @@ export function TicketsDuJour({
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>
+                <BoutonAnnuler id={t.id} numero={t.numero} />
               </div>
             </li>
           ))}

@@ -9,7 +9,7 @@ import {
 } from "@/domain/rules";
 import { Badge, EnTetePage, EtatVide } from "@/components/ui/primitives";
 import { ListeAdaptative, Empile, type Colonne } from "@/components/ui/liste";
-import { FormulaireProduit, BoutonActivation } from "./formulaire-produit";
+import { FormulaireProduit, GestionProduit } from "./formulaire-produit";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +22,7 @@ type Produit = {
   prixVente: number;
   coutMoyenUnitaire: number;
   suiviStock: boolean;
+  seuilAlerte: number;
   actif: boolean;
 };
 
@@ -102,7 +103,7 @@ export default async function PageProduits() {
       entete: "",
       role: "action",
       align: "droite",
-      rendu: (p) => <BoutonActivation id={p.id} actif={p.actif} />,
+      rendu: (p) => <GestionProduit produit={p} />,
     },
   ];
 

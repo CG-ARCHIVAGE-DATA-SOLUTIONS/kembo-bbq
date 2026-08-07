@@ -175,6 +175,12 @@ model Vente {
   cleIdempotence String? @unique
   horsLigne      Boolean @default(false)
 
+  // Annulation douce : le ticket reste visible dans l'audit mais est exclu des calculs.
+  annulee         Boolean   @default(false)
+  annulationAt    DateTime?
+  annulationPar   String?
+  annulationMotif String?
+
   lignes     LigneVente[]
   mouvements MouvementStock[]
 

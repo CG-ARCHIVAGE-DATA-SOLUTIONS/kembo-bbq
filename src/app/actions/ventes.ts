@@ -54,12 +54,13 @@ export async function validerVente(
 
 export async function supprimerVente(id: string, motif: string): Promise<Reponse> {
   try {
-    await exigerGerant();
-    const r = await annulerVente(id, motif);
+    const utilisateur = await exigerGerant();
+    const r = await annulerVente(id, motif, utilisateur.nom);
     revalidatePath("/");
     revalidatePath("/caisse");
     revalidatePath("/stock");
-    return { ok: true, message: `Ticket ${r.numero} annulé. Le stock a été rendu.` };
+    revalidatePath("/audit");
+    return { ok: true, message: `Ticket ${r.numero} annulé — stock rendu.` };
   } catch (e) {
     return echec(e);
   }

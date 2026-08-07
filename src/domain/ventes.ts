@@ -181,24 +181,51 @@ export async function enregistrerVente(entree: EntreeVente): Promise<ResultatVen
   });
 }
 
-/** Annulation : supprime le ticket et ses mouvements (cascade) — trace conservée en note. */
-export async function annulerVente(venteId: string, motif: string) {
+/** Annulation douce : le ticket reste en base mais est exclu de tous les calculs.
+ *  Le stock est rendu via des mouvements AJUSTEMENT compensatoires. */
+export async function annulerVente(venteId: string, motif: string, par = "Gérant") {
   const vente = await db.vente.findUnique({
     where: { id: venteId },
-    include: { journee: true },
+    include: { journee: true, mouvements: true },
   });
   if (!vente) throw new ErreurMetier("Ticket introuvable.");
-  if (vente.journee.statut === "CLOTUREE") {
-    throw new ErreurMetier("Journée clôturée : ce ticket ne peut plus être annulé.");
-  }
-  await db.vente.delete({ where: { id: venteId } });
-  return { numero: vente.numero, motif };
+  if (vente.annulee) throw new ErreurMetier("Ce ticket est déjà annulé.");
+
+  await db.$transaction(async (tx) => {
+    await tx.vente.update({
+      where: { id: venteId },
+      data: {
+        annulee: true,
+        annulationAt: new Date(),
+        annulationPar: par,
+        annulationMotif: motif || null,
+      },
+    });
+
+    // Remettre le stock pour chaque sortie vente
+    for (const mv of vente.mouvements) {
+      if (mv.type !== "SORTIE_VENTE") continue;
+      await tx.mouvementStock.create({
+        data: {
+          produitId: mv.produitId,
+          type: "AJUSTEMENT",
+          quantite: Math.abs(mv.quantite),
+          coutUnitaire: mv.coutUnitaire,
+          valeur: Math.abs(mv.valeur),
+          date: new Date(),
+          note: `Annulation ${vente.numero}${motif ? ` — ${motif}` : ""}`,
+        },
+      });
+    }
+  });
+
+  return { numero: vente.numero };
 }
 
 export async function ventesDuJour(date: Date = new Date()) {
   const jour = journeeCommerciale(date);
   return db.vente.findMany({
-    where: { date: { gte: debutJour(jour), lte: finJour(jour) } },
+    where: { date: { gte: debutJour(jour), lte: finJour(jour) }, annulee: false },
     include: {
       lignes: true,
       utilisateur: { select: { nom: true, identifiant: true } },
@@ -209,6 +236,7 @@ export async function ventesDuJour(date: Date = new Date()) {
 
 export async function dernieresVentes(limite = 20) {
   return db.vente.findMany({
+    where: { annulee: false },
     include: { lignes: true },
     orderBy: { date: "desc" },
     take: limite,
